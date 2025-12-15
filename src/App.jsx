@@ -5,7 +5,6 @@ import Chat from './components/Chat.jsx';
 import Rooms from './components/Rooms.jsx';
 import RoomChat from './components/RoomChat.jsx';
 import Profile from './components/Profile.jsx';
-import './App.css';
 
 // Main App Component
 function App() {
@@ -84,7 +83,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="App">
+      <div className="min-h-screen bg-white text-gray-800 leading-relaxed font-sans">
         <Routes>
           <Route 
             path="/" 

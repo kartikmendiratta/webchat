@@ -4,7 +4,6 @@ import { VideoCameraOutlined, MoreOutlined, CloseOutlined, SendOutlined, SearchO
 import VideoCall from './VideoCall';
 import Navbar from './Navbar';
 import { useSocket, useRandomChat, useMessages, useVideoCall } from '../hooks';
-import './Chat.css';
 
 
 const Chat = ({ user, onLogout, onShowRooms, onShowProfile }) => {
@@ -38,6 +37,8 @@ const Chat = ({ user, onLogout, onShowRooms, onShowProfile }) => {
     startVideoCall,
     endVideoCall
   } = useVideoCall(socket, currentPartner);
+
+  const isInChatSession = Boolean(currentPartner) || isSearching;
 
 
   const handleSendMessage = (e) => {
@@ -110,7 +111,7 @@ const Chat = ({ user, onLogout, onShowRooms, onShowProfile }) => {
 
 
   return (
-    <div className="chat-container">
+    <div className="min-h-screen bg-white flex flex-col">
       {/* Navbar */}
       <Navbar 
         user={user}
@@ -121,19 +122,17 @@ const Chat = ({ user, onLogout, onShowRooms, onShowProfile }) => {
       />
 
       {/* Main Content */}
-      <div className="chat-main">
+      <div className={`flex-1 flex flex-col p-4 bg-gray-50 ${isInChatSession ? 'overflow-hidden' : 'overflow-y-auto'}`}>
         {isSearching ? (
-          <div className="searching-container">
-            <Card className="searching-card">
-              <div className="searching-content">
-                <div className="searching-spinner">
-                  <div className="loading-spinner"></div>
-                </div>
-                <Typography.Title level={3} className="searching-title">Finding a chat partner...</Typography.Title>
-                <Typography.Text className="searching-text">Please wait while we match you with someone interesting!</Typography.Text>
+          <div className="flex-1 flex items-center justify-center">
+            <Card className="text-center max-w-md w-full">
+              <div className="p-8 space-y-4">
+                <div className="mx-auto mb-4 w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                <Typography.Title level={3} className="!mb-2 text-gray-800">Finding a chat partner...</Typography.Title>
+                <Typography.Text className="!text-gray-600 block">Please wait while we match you with someone interesting!</Typography.Text>
                 <Button 
                   onClick={endRandomChat}
-                  className="cancel-search-btn"
+                  className="mt-2"
                 >
                   Cancel Search
                 </Button>
@@ -141,37 +140,37 @@ const Chat = ({ user, onLogout, onShowRooms, onShowProfile }) => {
             </Card>
           </div>
         ) : !currentPartner ? (
-          <div className="welcome-container">
-            <Card className="welcome-card">
-              <div className="welcome-content">
-                <div className="welcome-icon">
-                  <div className="chat-icon">💬</div>
+          <div className="flex-1 flex items-center justify-center">
+            <Card className="text-center max-w-3xl w-full">
+              <div className="p-8 space-y-6">
+                <div className="w-16 h-16 bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                  <div>💬</div>
                 </div>
-                <Typography.Title level={2} className="welcome-title">Welcome to Random Chat!</Typography.Title>
-                <Typography.Text className="welcome-description">
+                <Typography.Title level={2} className="!mb-2 text-gray-800">Welcome to Random Chat!</Typography.Title>
+                <Typography.Text className="!text-gray-600 block leading-relaxed">
                   Connect with random people from around the world. Share your interests, 
                   have meaningful conversations, and make new friends!
                 </Typography.Text>
                 
-                <div className="topic-selection-section">
+                <div className="my-6">
                   <Button 
                     onClick={() => setShowTopicSelector(!showTopicSelector)}
-                    className="topic-toggle-btn"
+                    className="mb-4"
                   >
                     {showTopicSelector ? 'Hide' : 'Select'} Topics of Interest
                   </Button>
                   
                   {showTopicSelector && (
-                    <Card className="topic-selector">
-                      <Typography.Text strong className="topic-selector-label">Choose topics you're interested in:</Typography.Text>
-                      <div className="topic-categories">
-                        <div className="topic-row">
+                    <Card className="mt-4 text-left">
+                      <Typography.Text strong className="block mb-4 text-gray-800">Choose topics you're interested in:</Typography.Text>
+                      <div className="mb-4">
+                        <div className="flex flex-wrap gap-2">
                           {availableTopics.map(topic => (
                             <Tag.CheckableTag
                               key={topic}
                               checked={selectedTopics.includes(topic)}
                               onChange={() => toggleTopic(topic)}
-                              className="topic-chip"
+                              className="m-0"
                             >
                               {topic}
                             </Tag.CheckableTag>
@@ -180,15 +179,15 @@ const Chat = ({ user, onLogout, onShowRooms, onShowProfile }) => {
                       </div>
                       
                       {selectedTopics.length > 0 && (
-                        <div className="selected-topics-summary">
-                          <Typography.Text className="summary-text">
+                        <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mt-4">
+                          <Typography.Text className="text-sky-800">
                             <strong>Selected topics:</strong> {selectedTopics.join(', ')}
                           </Typography.Text>
                         </div>
                       )}
                       
-                      <div className="skip-topics-info">
-                        <Typography.Text className="skip-text">
+                      <div className="bg-gray-50 border border-gray-200 rounded-md p-3 mt-4">
+                        <Typography.Text className="text-gray-600 italic">
                           You can skip topic selection to chat with anyone randomly.
                         </Typography.Text>
                       </div>
@@ -202,7 +201,7 @@ const Chat = ({ user, onLogout, onShowRooms, onShowProfile }) => {
                   icon={<SearchOutlined />}
                   onClick={startRandomChat}
                   disabled={!isConnected}
-                  className="find-chat-btn"
+                  className="mt-2"
                 >
                   Find Random Chat
                 </Button>
@@ -210,11 +209,11 @@ const Chat = ({ user, onLogout, onShowRooms, onShowProfile }) => {
             </Card>
           </div>
         ) : (
-          <div className="chat-split-container">
+          <div className="flex flex-1 gap-4 min-h-0 overflow-hidden">
             {/* Video Call Section */}
             {isVideoCallActive && (
-              <div className="video-section">
-                <Card className="video-card" title={
+              <div className="flex-1 min-w-0 flex flex-col">
+                <Card className="h-full" title={
                   <Space>
                     <VideoCameraOutlined />
                     Video Call with {currentPartner.username}
@@ -238,15 +237,15 @@ const Chat = ({ user, onLogout, onShowRooms, onShowProfile }) => {
             )}
 
             {/* Messages Section */}
-            <Card className="messages-section">
-              <div className="chat-partner-header">
+            <Card className="flex-1 min-w-0 flex flex-col bg-white rounded-lg shadow-sm overflow-hidden">
+              <div className="bg-white border-b border-gray-100 p-4 flex items-center justify-between">
                 <Space>
-                  <div className="partner-avatar">
+                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                     {currentPartner.username.charAt(0).toUpperCase()}
                   </div>
-                  <div className="partner-details">
-                    <Typography.Text strong className="partner-name">{currentPartner.username}</Typography.Text>
-                    <Typography.Text type="success" className="partner-status">Online</Typography.Text>
+                  <div className="flex flex-col ml-3">
+                    <Typography.Text strong className="text-base">{currentPartner.username}</Typography.Text>
+                    <Typography.Text type="success" className="text-xs">Online</Typography.Text>
                   </div>
                 </Space>
                 <Space>
@@ -275,23 +274,23 @@ const Chat = ({ user, onLogout, onShowRooms, onShowProfile }) => {
               </div>
 
               {/* Messages Area */}
-              <div className="messages-container">
+              <div className="flex-1 overflow-y-auto p-4 bg-gray-50 flex flex-col gap-4 min-h-0">
                 {messages.length === 0 ? (
-                  <div className="empty-messages">
-                    <div className="empty-icon">💬</div>
+                  <div className="text-center py-10 text-gray-500">
+                    <div className="text-4xl mb-4">💬</div>
                     <Typography.Text>No messages yet. Start a conversation!</Typography.Text>
                   </div>
                 ) : (
                   messages.map((message, index) => (
                     <div
                       key={index}
-                      className={`message ${message.user.id === user.id ? 'own-message' : 'other-message'}`}
+                      className={`flex ${message.user.id === user.id ? 'justify-end' : 'justify-start'}`}
                     >
-                      <div className="message-bubble">
-                        <div className="message-content">
+                      <div className={`max-w-[300px] px-4 py-3 rounded-2xl ${message.user.id === user.id ? 'bg-blue-500 text-white' : 'bg-white text-gray-800 shadow-sm border border-gray-100'}`}>
+                        <div className="text-sm leading-snug">
                           {message.content}
                         </div>
-                        <div className="message-time">
+                        <div className={`text-xs mt-1 opacity-70 ${message.user.id === user.id ? 'text-white' : 'text-gray-500'}`}>
                           {new Date(message.timestamp).toLocaleTimeString()}
                         </div>
                       </div>
@@ -301,9 +300,9 @@ const Chat = ({ user, onLogout, onShowRooms, onShowProfile }) => {
 
                 {/* Typing Indicators */}
                 {typingUsers.length > 0 && (
-                  <div className="typing-indicator">
-                    <div className="typing-bubble">
-                      <Typography.Text className="typing-text">
+                  <div className="flex justify-start">
+                    <div className="bg-white px-4 py-3 rounded-2xl shadow-sm border border-gray-100">
+                      <Typography.Text className="text-sm text-gray-600 italic">
                         {typingUsers.map(u => u.username).join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing...
                       </Typography.Text>
                     </div>
@@ -314,10 +313,10 @@ const Chat = ({ user, onLogout, onShowRooms, onShowProfile }) => {
               </div>
 
               {/* Message Input */}
-              <div className="message-input-container">
+              <div className="bg-white border-t border-gray-100 p-4 flex-shrink-0">
                 <Input.Group compact>
                   <Input
-                    className="message-input"
+                    className="flex-1"
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
                     onFocus={handleTyping}
@@ -330,7 +329,7 @@ const Chat = ({ user, onLogout, onShowRooms, onShowProfile }) => {
                     icon={<SendOutlined />}
                     onClick={handleSendMessage}
                     disabled={!inputMessage.trim() || !isConnected}
-                    className="send-btn"
+                    className="rounded-r-md"
                   >
                     Send
                   </Button>

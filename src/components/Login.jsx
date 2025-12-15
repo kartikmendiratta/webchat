@@ -3,7 +3,6 @@ import { Button, Input, Checkbox, Card, Typography, Space, Divider } from 'antd'
 import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons';
 import ForgotPassword from './ForgotPassword';
 import ResetPassword from './ResetPassword';
-import './Login.css';
 
 const Login = ({ onLogin }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -98,23 +97,23 @@ const Login = ({ onLogin }) => {
   }
 
   return (
-    <div className="login-container">
-      <Card className="login-card" >
-        <div className="login-header">
-          <div className="login-icon">
+    <div className="min-h-screen flex items-center justify-center bg-[#1a1a1a] p-6 overflow-y-auto">
+      <Card className="w-full max-w-[400px] mx-auto shadow-lg rounded-lg bg-[#2d2d2d] border border-[#404040]" bordered={false}>
+        <div className="text-center mb-8">
+          <div className="w-[60px] h-[60px] bg-white rounded-full flex items-center justify-center mx-auto mb-4 p-2 shadow-md">
             <img 
               src="/webchat-logo.svg" 
               alt="WebChat" 
-              className="login-logo"
+              className="w-full h-full object-contain"
             />
           </div>
-          <Typography.Title level={2} className="login-title">WebChat</Typography.Title>
-          <Typography.Text className="login-subtitle">
+          <Typography.Title level={2} className="!m-0 !mb-2 !text-white">WebChat</Typography.Title>
+          <Typography.Text className="!text-gray-400">
             {isLogin ? 'Welcome back!' : 'Join the conversation!'}
           </Typography.Text>
         </div>
 
-        <form onSubmit={handleSubmit} className="login-form">
+        <form onSubmit={handleSubmit} className="w-full">
           <Space direction="vertical" size="middle" style={{ width: '100%' }}>
             {!isLogin && (
               <Input
@@ -162,15 +161,16 @@ const Login = ({ onLogin }) => {
             )}
 
             {!isLogin && (
-              <div className="topics-section">
-                <Typography.Text strong>Interests (Select multiple)</Typography.Text>
-                <div className="topics-grid">
+              <div className="my-4">
+                <Typography.Text strong className="!text-white">Interests (Select multiple)</Typography.Text>
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-2 mt-3 text-white">
                   {availableTopics.map(topic => (
                     <Checkbox
                       key={topic.value}
                       value={topic.value}
                       checked={formData.topics.includes(topic.value)}
                       onChange={handleTopicChange}
+                      className="text-white"
                     >
                       {topic.label}
                     </Checkbox>
@@ -185,21 +185,21 @@ const Login = ({ onLogin }) => {
               loading={loading}
               size="large"
               block
-              className="submit-btn"
+              className="mt-4"
             >
               {isLogin ? 'Login' : 'Register'}
             </Button>
           </Space>
         </form>
 
-        <Divider />
+        <Divider className="bg-gray-600" />
         
-        <div className="login-footer">
+        <div className="text-center">
           <Space direction="vertical" size="small" style={{ width: '100%' }}>
             <Button 
               type="link"
               onClick={() => setIsLogin(!isLogin)}
-              className="toggle-btn"
+              className="!p-0 !h-auto text-sm !text-[#1890ff]"
             >
               {isLogin ? "Don't have an account? Register" : "Already have an account? Login"}
             </Button>
@@ -208,7 +208,7 @@ const Login = ({ onLogin }) => {
               <Button 
                 type="link"
                 onClick={() => setShowForgotPassword(true)}
-                className="forgot-btn"
+                className="!p-0 !h-auto text-sm !text-[#1890ff]"
               >
                 Forgot Password?
               </Button>

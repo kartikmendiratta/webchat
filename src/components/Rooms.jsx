@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Input, Card, Typography, Space, Tag, Modal, Form, message, Spin, Empty } from 'antd';
 import { PlusOutlined, SearchOutlined, UserOutlined, LogoutOutlined, TeamOutlined, ArrowLeftOutlined } from '@ant-design/icons';
-import './Rooms.css';
 
 const Rooms = ({ user, onLogout, onJoinRoom, onShowChat }) => {
   const [rooms, setRooms] = useState([]);
@@ -138,19 +137,19 @@ const Rooms = ({ user, onLogout, onJoinRoom, onShowChat }) => {
   );
 
   return (
-    <div className="rooms-container">
+    <div className="min-h-screen bg-white flex flex-col">
       {/* Header */}
-      <div className="rooms-header">
-        <div className="header-content">
+      <div className="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <Space>
-            <div className="user-avatar">
-              <span className="avatar-text">
+            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+              <span className="text-white font-semibold text-lg">
                 {user.username.charAt(0).toUpperCase()}
               </span>
             </div>
-            <div className="user-details">
-              <Typography.Title level={2} className="app-title">Chat Rooms</Typography.Title>
-              <Typography.Text className="welcome-text">Join topic-based chat rooms worldwide</Typography.Text>
+            <div className="flex flex-col">
+              <Typography.Title level={2} className="!m-0 text-gray-900">Chat Rooms</Typography.Title>
+              <Typography.Text className="text-gray-600">Join topic-based chat rooms worldwide</Typography.Text>
             </div>
           </Space>
           
@@ -158,7 +157,7 @@ const Rooms = ({ user, onLogout, onJoinRoom, onShowChat }) => {
             <Button 
               icon={<ArrowLeftOutlined />}
               onClick={onShowChat}
-              className="back-to-chat-btn"
+              className="text-blue-600 border-blue-500"
             >
               Back to Chat
             </Button>
@@ -166,14 +165,12 @@ const Rooms = ({ user, onLogout, onJoinRoom, onShowChat }) => {
               type="primary"
               icon={<PlusOutlined />}
               onClick={() => setShowCreateForm(true)}
-              className="create-room-btn"
             >
               Create Room
             </Button>
             <Button 
               icon={<LogoutOutlined />}
               onClick={onLogout}
-              className="logout-btn"
             >
               Logout
             </Button>
@@ -182,20 +179,20 @@ const Rooms = ({ user, onLogout, onJoinRoom, onShowChat }) => {
       </div>
 
       {/* Filters */}
-      <div className="rooms-filters">
+      <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row gap-3 items-center">
         <Input
           placeholder="Search rooms..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           prefix={<SearchOutlined />}
-          className="search-input"
+          className="w-full md:max-w-md"
         />
         
         <Input
           placeholder="Filter by topic..."
           value={selectedTopic}
           onChange={(e) => setSelectedTopic(e.target.value)}
-          className="topic-input"
+          className="w-full md:w-64"
           list="topic-suggestions"
         />
         <datalist id="topic-suggestions">
@@ -206,39 +203,39 @@ const Rooms = ({ user, onLogout, onJoinRoom, onShowChat }) => {
       </div>
 
       {/* Rooms List */}
-      <div className="rooms-content">
+      <div className="max-w-6xl mx-auto px-4 pb-6 flex-1 w-full">
         {loading ? (
-          <div className="loading-container">
+          <div className="flex flex-col items-center justify-center py-16 text-gray-600">
             <Spin size="large" />
-            <Typography.Text>Loading rooms...</Typography.Text>
+            <Typography.Text className="mt-3">Loading rooms...</Typography.Text>
           </div>
         ) : filteredRooms.length === 0 ? (
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={
               <div>
-                <Typography.Title level={4}>No rooms found</Typography.Title>
+                <Typography.Title level={4} className="!mb-1">No rooms found</Typography.Title>
                 <Typography.Text>Create a new room or try a different search</Typography.Text>
               </div>
             }
           />
         ) : (
-          <div className="rooms-grid">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
             {filteredRooms.map(room => (
-              <Card key={room._id} className="room-card" hoverable>
-                <div className="room-header">
-                  <Typography.Title level={4} className="room-name">{room.name}</Typography.Title>
-                  <Tag color="blue" className="room-topic">{getTopicDisplayName(room.topic)}</Tag>
+              <Card key={room._id} className="hover:-translate-y-0.5 transition shadow-sm" hoverable>
+                <div className="flex justify-between items-start mb-3">
+                  <Typography.Title level={4} className="!m-0 text-gray-900">{room.name}</Typography.Title>
+                  <Tag color="blue" className="ml-2">{getTopicDisplayName(room.topic)}</Tag>
                 </div>
                 
-                <Typography.Text className="room-description">{room.description || 'No description'}</Typography.Text>
+                <Typography.Text className="text-gray-600 block mb-4 leading-relaxed">{room.description || 'No description'}</Typography.Text>
                 
-                <div className="room-stats">
+                <div className="text-sm text-gray-600 mb-4">
                   <Space>
-                    <Typography.Text className="participant-count">
+                    <Typography.Text className="font-medium">
                       <TeamOutlined /> {room.participants.length}/{room.maxParticipants}
                     </Typography.Text>
-                    <Typography.Text className="room-created">
+                    <Typography.Text className="italic">
                       by {room.createdBy.username}
                     </Typography.Text>
                   </Space>
@@ -248,7 +245,6 @@ const Rooms = ({ user, onLogout, onJoinRoom, onShowChat }) => {
                   type="primary"
                   block
                   onClick={() => handleJoinRoom(room._id)}
-                  className="join-room-btn"
                 >
                   Join Room
                 </Button>

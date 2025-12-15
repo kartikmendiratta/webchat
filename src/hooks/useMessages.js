@@ -42,6 +42,7 @@ export const useMessages = (socket, user, currentPartner) => {
   }, [socket]);
 
   const handleTyping = () => {
+    if (!socket) return;
     if (!isTyping && currentPartner) {
       setIsTyping(true);
       socket.emit('typing_start');
@@ -57,6 +58,7 @@ export const useMessages = (socket, user, currentPartner) => {
   };
 
   const handleStopTyping = () => {
+    if (!socket) return;
     if (isTyping) {
       setIsTyping(false);
       socket.emit('typing_stop');

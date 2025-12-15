@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button, Input, Card, Typography, Space, Tag, message, Spin } from 'antd';
 import { ArrowLeftOutlined, LogoutOutlined, SendOutlined, UserOutlined } from '@ant-design/icons';
 import io from 'socket.io-client';
-import './RoomChat.css';
 
 const RoomChat = ({ user, room, onLeaveRoom }) => {
   const [socket, setSocket] = useState(null);
@@ -323,30 +322,30 @@ const RoomChat = ({ user, room, onLeaveRoom }) => {
 
   if (loading) {
     return (
-      <div className="room-chat-container">
-        <div className="loading-container">
+      <div className="flex flex-col h-screen bg-white">
+        <div className="flex flex-col items-center justify-center flex-1 text-gray-600">
           <Spin size="large" />
-          <Typography.Text>Loading room...</Typography.Text>
+          <Typography.Text className="mt-3">Loading room...</Typography.Text>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="room-chat-container">
+    <div className="flex flex-col h-screen bg-white">
       {/* Header */}
-      <div className="room-header">
-        <div className="room-info">
+      <div className="bg-white border-b border-gray-100 p-4 md:p-6 flex items-center justify-between shadow-sm sticky top-0 z-40">
+        <div className="flex-1">
           <Space>
-            <Typography.Title level={2} className="room-name">
+            <Typography.Title level={2} className="!m-0 flex items-center gap-3 text-gray-900">
               {room.name}
-              {room.createdBy._id === user.id && <Tag color="orange" className="creator-badge">Creator</Tag>}
+              {room.createdBy._id === user.id && <Tag color="orange" className="ml-2">Creator</Tag>}
             </Typography.Title>
           </Space>
-          <div className="room-meta">
+          <div className="mt-2">
             <Space>
-              <Tag color="blue" className="room-topic">{getTopicDisplayName(room.topic)}</Tag>
-              <Typography.Text className="participant-count">
+              <Tag color="blue">{getTopicDisplayName(room.topic)}</Tag>
+              <Typography.Text className="text-gray-600">
                 <UserOutlined /> {roomUsers.length}/{room.maxParticipants}
               </Typography.Text>
             </Space>
@@ -354,14 +353,14 @@ const RoomChat = ({ user, room, onLeaveRoom }) => {
         </div>
         
         <Space>
-          <div className="connection-status">
-            <div className={`status-dot ${isConnected ? 'connected' : 'disconnected'}`}></div>
+          <div className="flex items-center gap-2 text-sm text-gray-600 mr-2">
+            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
             <Typography.Text>{isConnected ? 'Connected' : 'Disconnected'}</Typography.Text>
           </div>
           <Button 
             icon={<ArrowLeftOutlined />}
             onClick={onLeaveRoom} 
-            className="back-to-rooms-btn"
+            className="text-blue-600 border-blue-500"
           >
             Back to Rooms
           </Button>
@@ -369,7 +368,6 @@ const RoomChat = ({ user, room, onLeaveRoom }) => {
             danger
             icon={<LogoutOutlined />}
             onClick={onLeaveRoom} 
-            className="leave-room-btn"
           >
             Leave Room
           </Button>
@@ -377,37 +375,39 @@ const RoomChat = ({ user, room, onLeaveRoom }) => {
       </div>
 
       {/* Chat Area */}
-      <div className="chat-area">
+      <div className="flex flex-1 overflow-hidden flex-col md:flex-row">
         {/* Messages */}
-        <div className="messages-container">
+        <div className="flex-1 overflow-y-auto p-5 bg-gray-50 flex flex-col gap-4 min-h-0">
           {messages.map((message) => (
-            <div key={message.id} className={`message ${message.type === 'system' ? 'system-message' : ''}`}>
+            <div key={message.id} className={`flex gap-3 max-w-[70%] ${message.type === 'system' ? 'justify-center max-w-full' : ''}`}>
               {message.type !== 'system' && (
-                <div className="message-avatar">
-                  <span className="avatar-text">
+                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                  <span>
                     {message.user.username.charAt(0).toUpperCase()}
                   </span>
                 </div>
               )}
               
-              <div className="message-content">
+              <div className="flex-1 min-w-0">
                 {message.type !== 'system' && (
-                  <div className="message-header">
-                    <Typography.Text strong className="message-username">{message.user.username}</Typography.Text>
-                    <Typography.Text className="message-time">{formatTime(message.timestamp)}</Typography.Text>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Typography.Text strong className="text-sm text-gray-900">{message.user.username}</Typography.Text>
+                    <Typography.Text className="text-xs text-gray-500">{formatTime(message.timestamp)}</Typography.Text>
                   </div>
                 )}
-                <div className="message-text">{message.content}</div>
+                <div className={`rounded-2xl px-4 py-3 shadow-sm border ${message.type === 'system' ? 'bg-gray-100 text-gray-600 italic text-center' : 'bg-white text-gray-800'} leading-relaxed`}>
+                  {message.content}
+                </div>
               </div>
             </div>
           ))}
           
           {/* Typing indicators */}
           {typingUsers.length > 0 && (
-            <div className="typing-indicator">
+            <div className="text-center text-sm text-gray-600 italic py-2">
               <Typography.Text>
                 {typingUsers.map(u => u.username).join(', ')} 
-                {typingUsers.length === 1 ? ' is' : ' are'} typing...
+                {typingUsers.length === 1 ? 'is' : 'are'} typing...
               </Typography.Text>
             </div>
           )}
@@ -416,14 +416,14 @@ const RoomChat = ({ user, room, onLeaveRoom }) => {
         </div>
 
         {/* Message Input */}
-        <div className="message-form">
+        <div className="bg-white border-t border-gray-100 p-4 md:p-6">
           <Input.Group compact>
             <Input
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={handleTyping}
               placeholder="Type a message..."
-              className="message-input"
+              className="flex-1"
               disabled={!isConnected}
               onPressEnter={handleSendMessage}
             />
@@ -432,7 +432,7 @@ const RoomChat = ({ user, room, onLeaveRoom }) => {
               icon={<SendOutlined />}
               onClick={handleSendMessage}
               disabled={!inputMessage.trim() || !isConnected}
-              className="send-button"
+              className="rounded-r-md"
             >
               Send
             </Button>
@@ -441,16 +441,16 @@ const RoomChat = ({ user, room, onLeaveRoom }) => {
       </div>
 
       {/* Sidebar - Room Users */}
-      <Card className="room-sidebar" title={`Online Users (${roomUsers.length})`}>
-        <div className="users-list">
+      <Card className="w-full md:w-64 bg-white border-t md:border-l border-gray-100" title={`Online Users (${roomUsers.length})`}>
+        <div className="flex flex-col gap-3">
           {roomUsers.map(user => (
-            <div key={user.id} className="user-item">
-              <div className="user-avatar">
-                <span className="avatar-text">
+            <div key={user.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50">
+              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                <span>
                   {user.username.charAt(0).toUpperCase()}
                 </span>
               </div>
-              <Typography.Text className="user-name">{user.username}</Typography.Text>
+              <Typography.Text className="text-sm text-gray-800 font-medium">{user.username}</Typography.Text>
             </div>
           ))}
         </div>
