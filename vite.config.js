@@ -11,4 +11,8 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  // Add this section to fix the Vercel error
+  build: {
+    outDir: 'build',
+  },
 })
